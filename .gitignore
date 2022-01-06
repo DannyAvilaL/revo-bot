@@ -1,0 +1,9 @@
+#Ignorando las credenciales
+src/credentials.json
+
+#Ignorando las credenciales de config
+src/config.py
+
+#ignorando el cache
+src/__pycache__/config.cpython-39.pyc
+src/__pycache__/sheets.cpython-39.pyc

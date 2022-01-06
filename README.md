@@ -1,2 +1,7 @@
-# revo-bot
-Este es un repositorio que filtra el acceso a un servidor de discord que se puede conectar a un archivo de google sheets por medio de la API.
+# Revo Bot para servidor de Discord
+
+Este el repositorio del bot de discord para el servidor de la comunidad Revo del Tec Campus Estado de México.
+
+Este bot está diseñado principalmente para filtrar el acceso al servidor utilizando una comprobación a una hoja de google sheets por medio de su API. 
+
+Eso con el objetivo de poder evitar que personas no deseadas se unan al servidor. 
