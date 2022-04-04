@@ -4,6 +4,8 @@ src/credentials.json
 #Ignorando las credenciales de config
 src/config.py
 
-#ignorando el cache
-src/__pycache__/config.cpython-39.pyc
-src/__pycache__/sheets.cpython-39.pyc
+#Ignorando el cache
+src/__pycache__
+
+#Ignorando el entorno virtual
+src/bot-env

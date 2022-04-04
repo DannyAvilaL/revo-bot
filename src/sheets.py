@@ -28,14 +28,14 @@ def get_valid_student(full_name: str) -> bool:
     """
     pass
 
-def get_joined_student(discord_user: list[str]) -> bool:
+def get_joined_student(discord_user: 'list[str]') -> bool:
     """
     Función que revisa si el estudiante ya estaba previamente
     registrado como inscrito en el servidor
     """
     pass
 
-def new_discord_student(discord_user: list[str]) -> bool:
+def new_discord_student(discord_user: 'list[str]') -> bool:
     """
     Función que modificará el estado del estudiante como
     'DENTRO' en la columna '¿Dentro del server?'

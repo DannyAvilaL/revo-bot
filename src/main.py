@@ -29,11 +29,6 @@ class RevoBot(discord.Client):
 		if mensaje.content.lower().startswith("$nuevo user"):
 			await mensaje.channel.send("Ingresa tu nombre completo")
 
-	
-
-
-
-
 
 intents = discord.Intents.default()
 intents.members = True
