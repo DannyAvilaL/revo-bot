@@ -12,18 +12,26 @@ class Student:
 
     @property
     def get_nombre_completo(self):
+        """
+        Returns the full name of the student
+        """
         return self.nombre_completo
 
     @property
     def get_user_name(self):
+        """Returns the user name of the student"""
         return self.user_name
     
     @property
-    def get_user_numer(self):
+    def get_user_number(self):
+        """Returns the discord # of the student"""
         return self.user_number
 
     def change_user(self, new_user: str):
-        "User#4184"
+        """
+        Updates the discord user info of the student.
+        new_user: 'NewUser#1234'
+        """
         self.user_name = new_user[:4:]
         self.user_number = new_user[5::]
         

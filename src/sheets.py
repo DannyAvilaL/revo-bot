@@ -1,6 +1,18 @@
 """
-Programa que accede a google sheets y obtiene/actualiza
-la información de las celdas.
+Program that access the google sheets and gets/update
+the information of the students ans users into the cells.
+
+COLUMN -- NAME
+---------------
+A1    ---- Matrícula
+B1    ---- Nombre
+C1    ---- Apellido paterno
+D1    ---- Apelludo materno
+E1    ---- Discord User
+F1    ---- Discord #
+G1    ---- ¿Dentro del server?
+
+Starting from row 2 the users are registered
 """
 
 import gspread
@@ -17,28 +29,28 @@ def open_google_sheets() -> str:
     global sh
     try:
         sh = gs.open(SHEET_NAME)
-        return "Sheets abierto"
+        return "Sheets open"
     except:
-        return "Hubo un error de Conexion"
+        return "Conection error."
 
 def get_valid_student(full_name: str) -> bool:
     """
-    Función que revisa que el nombre REAL del estudiante esté dentro
-    de la comunidad. 
+    Function that registers the student name into the excel sheets
+    along with the discord username.
     """
     pass
 
 def get_joined_student(discord_user: 'list[str]') -> bool:
     """
-    Función que revisa si el estudiante ya estaba previamente
-    registrado como inscrito en el servidor
+    Function that evaluates if the student is already
+    registered into the server.
     """
     pass
 
 def new_discord_student(discord_user: 'list[str]') -> bool:
     """
-    Función que modificará el estado del estudiante como
-    'DENTRO' en la columna '¿Dentro del server?'
+    Function that will modify the state of the student
+    as "DENTRO" in the column '¿Dentro del server?'
     """
     pass
 
