@@ -5,12 +5,10 @@ the information of the students ans users into the cells.
 COLUMN -- NAME
 ---------------
 A1    ---- Matrícula
-B1    ---- Nombre
-C1    ---- Apellido paterno
-D1    ---- Apelludo materno
-E1    ---- Discord User
-F1    ---- Discord #
-G1    ---- ¿Dentro del server?
+B1    ---- Nombre completo
+C1    ---- Discord User
+D1    ---- Discord #
+E1    ---- ¿Dentro del server?
 
 Starting from row 2 the users are registered
 """

@@ -6,8 +6,11 @@ This bot main purpose is filtering the un-wanted access
 import discord
 from config import DISCORD_KEY, MENSAJE_BIENVENIDA
 import sheets
+import re
 
 class RevoBot(discord.Client):
+
+	students = {}
 
 	async def on_ready(self):
 		"""
@@ -44,7 +47,38 @@ class RevoBot(discord.Client):
 			await mensaje.channel.send("Te enviaremos un DM.")
 			channel = await mensaje.author.create_dm()
 			await channel.send(MENSAJE_BIENVENIDA)
+			self.temp_channel = mensaje.channel
 			await channel.send("Por favor ingresa tu matrícula")
+
+			def esperar_matricula(msg) -> any:
+				"""
+				Check that the id is valid with regex
+				add the value into the Student class
+
+				Returns if valid: discord.message.Message
+				Returns if not valid: any
+				"""
+				valid = bool(re.match(r"A\d{8}", msg.content))
+				return valid and msg.channel == channel 
+
+			def esperar_nombre(msg) -> any:
+				"""
+				Waits until a name is sent
+				regex? : [A-Za-z]/[^0-9] -> not working yet
+				"""
+				return msg.channel == channel
+
+			msg = await self.wait_for('message', check=esperar_matricula)
+			matricula = msg.content
+			self.students[msg.content] = []
+			await msg.add_reaction("✌")
+			#add typing delay
+			await channel.send("Por favor ingresa tu nombre completo")
+			msg = await self.wait_for('message', check=esperar_matricula)
+			#remeber student id?
+			self.students[matricula].append(msg.content)
+			await msg.add_reaction("✌")
+
 
 		if mensaje.guild == None:
 			await mensaje.add_reaction(f"✅")

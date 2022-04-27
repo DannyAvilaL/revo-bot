@@ -9,6 +9,7 @@ class Student:
         self.nombre_completo = nombre
         self.user_name = user[0]
         self.user_number = user[1]
+        self.matrícula
 
     @property
     def get_nombre_completo(self):
