@@ -64,21 +64,24 @@ class RevoBot(discord.Client):
 			def esperar_nombre(msg) -> any:
 				"""
 				Waits until a name is sent
-				regex? : [A-Za-z]/[^0-9] -> not working yet
+				Accepts only name characters.
+				Prevents getting spam or invalid data
 				"""
-				return msg.channel == channel
+				valid = bool(re.match(r"[^0-9*.$+-=!@~^!¡?¿%&/()]{7,30}", msg.content))
+				return valid and msg.channel == channel
 
 			msg = await self.wait_for('message', check=esperar_matricula)
 			matricula = msg.content
 			self.students[msg.content] = []
 			await msg.add_reaction("✌")
 			#add typing delay
+			#await self.trigger_typing() -> not in class
 			await channel.send("Por favor ingresa tu nombre completo")
-			msg = await self.wait_for('message', check=esperar_matricula)
+			msg = await self.wait_for('message', check=esperar_nombre)
 			#remeber student id?
 			self.students[matricula].append(msg.content)
 			await msg.add_reaction("✌")
-
+			print(self.students)
 
 		if mensaje.guild == None:
 			await mensaje.add_reaction(f"✅")
