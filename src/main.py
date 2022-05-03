@@ -4,9 +4,13 @@ This bot main purpose is filtering the un-wanted access
 """
 
 import discord
-from config import DISCORD_KEY, MENSAJE_BIENVENIDA
-import sheets
 import re
+
+# Custom files
+import sheets
+from config import DISCORD_KEY
+from student import Student
+from mensajes import MENSAJE_BIENVENIDA, MENSAJE_VERIFICADO, MENSAJE_ERROR
 
 intents = discord.Intents.all() #.default()
 intents.members = True
@@ -26,7 +30,8 @@ class RevoBot(discord.Client):
 		to let the owner that is initialized
 		"""
 		print(f"Sesion iniciada con {self.user}")
-		self.channel_id = 921902844444049470
+		#self.channel_id = 921902844444049470
+		self.channel_id = 848300570217545729
 		self.channel_name = "revo-bot"
 	
 
@@ -62,20 +67,24 @@ class RevoBot(discord.Client):
 			return valid and msg.channel == channel
 
 		msg = await self.wait_for('message', check=esperar_matricula)
-		matricula = msg.content
-		self.students[msg.author.id] = {'matricula': matricula}
+		student = Student("", msg.author.name, msg.author.id, msg.content)
+		self.students[msg.author.id] = student
 		await msg.add_reaction("✌")
 		#add typing delay
 		await channel.trigger_typing() #-> not in class
 		await channel.send("Por favor ingresa tu nombre completo")
 		msg = await self.wait_for('message', check=esperar_nombre)
-		self.students[msg.author.id]['Nombre'] = msg.content
+		self.students[msg.author.id].nombre_completo = msg.content
 		await msg.add_reaction("✌")
-		author_id = msg.author.id
-		member = self.guild.get_member(msg.author.id)
-		await member.add_roles(discord.utils.get(member.guild.roles, name=self.registered))
-		await member.remove_roles(discord.utils.get(member.guild.roles, name=self.unregistered))
-		await channel.send("En caso de no tener tu nuevo rol contacta a un administrador.")
+		last_register = sheets.get_last_row()
+		registro = sheets.new_discord_student(self.students[msg.author.id], last_register+1)
+		if registro:
+			member = self.guild.get_member(msg.author.id)
+			await member.add_roles(discord.utils.get(member.guild.roles, name=self.registered))
+			await member.remove_roles(discord.utils.get(member.guild.roles, name=self.unregistered))
+			await channel.send(MENSAJE_VERIFICADO)
+		else:
+			await channel.send(MENSAJE_ERROR)
 		
 
 	async def on_message(self, mensaje):
@@ -83,7 +92,7 @@ class RevoBot(discord.Client):
 			return
 
 		# Agregar privilegios a propietario de bot unicamente
-		if mensaje.content.startswith("$Config"):
+		if mensaje.content.startswith("$Config") and mensaje.channel.id == self.channel_id:
 			self.channel_id = mensaje.channel.id
 			self.channel_name = mensaje.channel.name
 			self.guild = mensaje.guild
@@ -91,7 +100,7 @@ class RevoBot(discord.Client):
 			estado = sheets.open_google_sheets()
 			await mensaje.add_reaction(f"<:hehe:960943492392165376>")
 			await mensaje.channel.send("Bot Configurado")
-			await mensaje.channel.send(estado)
+			await mensaje.channel.send(f"Conexión a google sheets {'Correcta' if estado else estado}")
 
 		if mensaje.content == "$registro" and mensaje.guild.id == self.server.id:
 			await mensaje.channel.send("Te enviaremos un DM.")
@@ -121,30 +130,29 @@ class RevoBot(discord.Client):
 				return valid and msg.channel == channel
 
 			msg = await self.wait_for('message', check=esperar_matricula)
-			matricula = msg.content
-			self.students[msg.author.id] = {'matricula': matricula}
+			student = Student("", msg.author.name, msg.author.id,  matricula=msg.content)
+			self.students[msg.author.id] = student
 			await msg.add_reaction("✌")
 			#add typing delay
-			await channel.trigger_typing()
+			await channel.trigger_typing() #-> not in class
 			await channel.send("Por favor ingresa tu nombre completo")
 			msg = await self.wait_for('message', check=esperar_nombre)
-			self.students[msg.author.id]['Nombre'] = msg.content
+			self.students[msg.author.id].nombre_completo = msg.content
 			await msg.add_reaction("✌")
-			author_id = msg.author.id
-			member = self.guild.get_member(msg.author.id)
-			await member.add_roles(discord.utils.get(member.guild.roles, name=self.registered))
-			await member.remove_roles(discord.utils.get(member.guild.roles, name=self.unregistered))
+			last_register = sheets.get_last_row()
+			registro = sheets.new_discord_student(self.students[msg.author.id], last_register+1)
+			if registro:
+				member = self.guild.get_member(msg.author.id)
+				await member.add_roles(discord.utils.get(member.guild.roles, name=self.registered))
+				await member.remove_roles(discord.utils.get(member.guild.roles, name=self.unregistered))
+				await channel.send(MENSAJE_VERIFICADO)
+			else:
+				await channel.send(MENSAJE_ERROR)
 
 		# Might improve to give more random and funny messages
 		if mensaje.content.startswith("$Hola"):
 			await mensaje.channel.send("Hola!")
 		
-		if mensaje.content.startswith("$Get"):
-			val = sheets.get_cell_value(mensaje.content[5::])
-			await mensaje.channel.send(f"Valor de la celda: {val}")
-
-		if mensaje.content.lower().startswith("$nuevo user"):
-			await mensaje.channel.send("Ingresa tu nombre completo")
 		
 		if mensaje.content.lower() == "$mimir":
 			await mensaje.channel.send(f"Hora de ir a mimir <:hehe:960943492392165376>")
@@ -152,5 +160,6 @@ class RevoBot(discord.Client):
 			exit()
 
 
-bot = RevoBot()
-bot.run(DISCORD_KEY)
+if __name__ == "__main__":
+	bot = RevoBot()
+	bot.run(DISCORD_KEY)

@@ -5,11 +5,11 @@ Discord hasta el worksheet de google Sheets.
 
 class Student:
 
-    def __init__(self, nombre: str, user: 'list[str]'):
+    def __init__(self, nombre, user_name, user_number, matricula):
         self.nombre_completo = nombre
-        self.user_name = user[0]
-        self.user_number = user[1]
-        self.matrícula = ""
+        self.user_name = user_name
+        self.user_number = user_number
+        self.matricula = matricula
 
     @property
     def get_nombre_completo(self):

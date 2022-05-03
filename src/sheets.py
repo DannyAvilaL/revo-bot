@@ -15,21 +15,24 @@ Starting from row 2 the users are registered
 
 import gspread
 from google.oauth2.service_account import Credentials
+from student import Student
 
 from config import SCOPES, KEY, SHEET_NAME
 
 credentials = Credentials.from_service_account_file(KEY, scopes = SCOPES)
 gs = gspread.authorize(credentials)
 
-sh = None
+sh = worksheet =  None
 
-def open_google_sheets() -> str:
-    global sh
+def open_google_sheets() -> bool:
+    global sh, worksheet
     try:
         sh = gs.open(SHEET_NAME)
-        return "Sheets open"
-    except:
-        return "Conection error."
+        worksheet = sh.get_worksheet(0)
+        return True
+    except Exception as  e:
+        print(e)
+        return False
 
 def get_valid_student(full_name: str) -> bool:
     """
@@ -45,12 +48,27 @@ def get_joined_student(discord_user: 'list[str]') -> bool:
     """
     pass
 
-def new_discord_student(discord_user: 'list[str]') -> bool:
+def new_discord_student(student: Student, row: int) -> bool:
     """
-    Function that will modify the state of the student
-    as "DENTRO" in the column '¿Dentro del server?'
+    Function that will register the new student into the 
+    google sheet database.
+    Arguments: Student - class
     """
-    pass
+    try:
+        student_name = student.nombre_completo
+        student_disc = student.user_name
+        student_disc_id = student.user_number
+        student_id = student.matricula
+        student_data = [student_id, student_name, student_disc, student_disc_id, "SI"]
+        worksheet.insert_row(student_data, row)
+        print("Usuario registrado con éxito")
+        return True
+    except Exception as e:
+        print(e)
+        return False
+        
+    
 
-def get_cell_value(cell: str) -> str:
-    return sh.sheet1.get(cell)
+def get_last_row() -> 'list[str]':
+    student_list = worksheet.col_values(1)
+    return len(student_list)
